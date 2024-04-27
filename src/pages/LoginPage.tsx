@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import MuiAlert from '@mui/material/Alert';
 import AuthService from '../logic/domain/AuthService';
 import {Backdrop, CircularProgress, Snackbar} from "@mui/material";
+import {GoogleLogin} from "@react-oauth/google";
+import {FacebookLoginButton} from "react-social-login-buttons";
+import SocialLogin from "../components/auth/SocialLogin";
 
 type Props = {};
 
@@ -23,24 +26,24 @@ const LoginPage: React.FC<Props> = () => {
     const [severity, setSeverity] = useState<'success' | 'error'>('error');
 
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-        event.preventDefault();
-        setLoading(true);
-        const data = new FormData(event.currentTarget);
-        const email = data.get('email') as string;
-        const password = data.get('password') as string;
-
-        const isSuccess = await AuthService.login(email, password);
-        setLoading(false);
-        if (isSuccess) {
-            setMessage('Přihlášení proběhlo úspěšně!')
-            setSeverity('success')
-        } else {
-            setMessage('Přihlášení se nezdařilo. Zkontroluj prosím své přihlašovací údaje a zkus to znovu.')
-            setSeverity('error')
-        }
-        setOpen(true);
-    };
+    // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    //     event.preventDefault();
+    //     setLoading(true);
+    //     const data = new FormData(event.currentTarget);
+    //     const email = data.get('email') as string;
+    //     const password = data.get('password') as string;
+    //
+    //     const isSuccess = await AuthService.login(email, password);
+    //     setLoading(false);
+    //     if (isSuccess) {
+    //         setMessage('Přihlášení proběhlo úspěšně!')
+    //         setSeverity('success')
+    //     } else {
+    //         setMessage('Přihlášení se nezdařilo. Zkontroluj prosím své přihlašovací údaje a zkus to znovu.')
+    //         setSeverity('error')
+    //     }
+    //     setOpen(true);
+    // };
 
     const handleClose = (event?: React.SyntheticEvent<Element, Event>, reason?: string) => {
         if (reason === 'clickaway') {
@@ -61,7 +64,7 @@ const LoginPage: React.FC<Props> = () => {
                 sm={4}
                 md={7}
                 sx={{
-                    backgroundImage: 'url(/background/login.jpg)',
+                    backgroundImage: 'url(/background/test.png)',
                     backgroundRepeat: 'no-repeat',
                     backgroundColor: theme.palette.primary.main,
                     backgroundSize: 'cover',
@@ -87,7 +90,7 @@ const LoginPage: React.FC<Props> = () => {
                         Vrať se, a udělej velké věci ve světě hudby!
                     </Typography>
 
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
@@ -98,7 +101,7 @@ const LoginPage: React.FC<Props> = () => {
                             autoComplete="email"
                             autoFocus
                             InputLabelProps={{
-                                style: { color: theme.palette.text.primary }
+                                style: {color: theme.palette.text.primary}
                             }}
                             sx={{
                                 '& label.Mui-focused': {
@@ -140,7 +143,7 @@ const LoginPage: React.FC<Props> = () => {
                             id="password"
                             autoComplete="current-password"
                             InputLabelProps={{
-                                style: { color: theme.palette.text.primary }
+                                style: {color: theme.palette.text.primary}
                             }}
                             sx={{
                                 '& label.Mui-focused': {
@@ -176,11 +179,11 @@ const LoginPage: React.FC<Props> = () => {
                             <Grid item xs>
                                 <FormControlLabel
                                     control={<Checkbox value="remember" color="primary"
-                                                       sx = {{
+                                                       sx={{
                                                            color: theme.palette.text.primary
                                                        }}
                                     />}
-                                    label= "Pamatuj si mě"
+                                    label="Pamatuj si mě"
                                 />
                             </Grid>
 
@@ -195,13 +198,13 @@ const LoginPage: React.FC<Props> = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Přihlásit se
                         </Button>
 
-                        <Box sx={{ textAlign: 'center', mt: 2 }}>
-                            <Typography variant="body2" component="span" sx={{ color: theme.palette.text.primary }}>
+                        <Box sx={{textAlign: 'center', mt: 2}}>
+                            <Typography variant="body2" component="span" sx={{color: theme.palette.text.primary}}>
                                 {"Ještě nejsi zaregistrován? "}
                             </Typography>
 
@@ -221,6 +224,8 @@ const LoginPage: React.FC<Props> = () => {
                             </Link>
                         </Box>
                     </Box>
+
+                    <SocialLogin />
                 </Box>
             </Grid>
 

@@ -3,19 +3,21 @@ import api from 'axios';
 interface LoginRequest {
     email: string;
     password: string;
+    type: string;
 }
 
 interface RegisterRequest {
     email: string;
     password: string;
+    type: string;
 }
 
 class AuthService {
     async login (email: string, password: string): Promise<boolean> {
-        const requestBody: LoginRequest = { email, password };
+        const requestBody: LoginRequest = { email, password, type: "artist" };
 
         try {
-            const response = await api.post("http://localhost:8080/api/auth/artist/login", requestBody)
+            const response = await api.post("http://localhost:8080/api/auth/basic/login", requestBody)
 
             if (response.status === 200) {
                 window.location.href = "/panel";
@@ -35,10 +37,10 @@ class AuthService {
     }
 
     async register(email: string, password: string): Promise<boolean> {
-        const requestBody: RegisterRequest = { email, password };
+        const requestBody: RegisterRequest = { email, password, type: "artist" };
 
         try {
-            const response = await api.post("http://localhost:8080/api/auth/artist/register", requestBody);
+            const response = await api.post("http://localhost:8080/api/auth/basic/register", requestBody);
             if (response.status === 201) {
                 window.location.href = "/panel";
                 return true;

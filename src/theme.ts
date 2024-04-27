@@ -1,5 +1,11 @@
 import { createTheme } from '@mui/material/styles';
 
+declare module '@mui/material/styles' {
+    interface TypeBackground {
+        alternate?: string;
+    }
+}
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -13,6 +19,7 @@ const theme = createTheme({
         },
         background: {
             default: '#1E1E1E',
+            alternate: '#2E2E2E',
         },
         text: {
             primary: '#FFF4E1',
