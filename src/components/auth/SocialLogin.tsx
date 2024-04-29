@@ -5,7 +5,9 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import {GoogleLogin} from "@react-oauth/google";
 import {useTheme} from "@mui/material/styles";
-import {FacebookLoginButton} from "react-social-login-buttons";
+import {FacebookLoginButton, GoogleLoginButton} from "react-social-login-buttons";
+import MyFacebookLoginButton from "../../utils/FacebookCustomButton";
+import {LoginSocialFacebook, LoginSocialGoogle} from "reactjs-social-login";
 
 const SocialLogin: React.FC = () => {
     const theme = useTheme()
@@ -35,15 +37,25 @@ const SocialLogin: React.FC = () => {
                 <Box sx={{ borderBottom: `2px solid ${theme.palette.text.primary}`, flexGrow: 1 }} />
             </Box>
 
-            <GoogleLogin
-                onSuccess={credentialResponse => {
-                    console.log(credentialResponse);
-                }}
-                onError={() => {
-                    console.log('Login Failed');
-                }}
-            />
-            <FacebookLoginButton />
+             <LoginSocialGoogle client_id={"*"}
+                           onReject={(error) => {
+                                 console.log(error);
+                             }}
+                            onResolve={(response) => {
+                                console.log(response);
+                           }}>
+                 <GoogleLoginButton />
+             </LoginSocialGoogle>
+            <LoginSocialFacebook appId={"*"}
+                                 onReject={(error) => {
+                                     console.log(error);
+                                 }}
+                                 onResolve={(response) => {
+                                     console.log(response);
+                                 }
+                                 }>
+                <FacebookLoginButton />
+            </LoginSocialFacebook>
         </Box>
     )
 }

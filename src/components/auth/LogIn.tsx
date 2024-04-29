@@ -1,15 +1,22 @@
 import {Box, Theme} from '@mui/material';
-import React from 'react';
+import React, {useContext} from 'react';
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import AuthService from "../../logic/domain/AuthService";
+import {UIProcessContext} from "../../contexts/UIProcessContext";
+import {useTheme} from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Button from "@mui/material/Button";
+import SocialLogin from "./SocialLogin";
+import StyledTextField from "../global/StyledTextField";
 
-type Props = {
-    theme: Theme
-};
 
-const LogIn: React.FC<Props> = () => {
-
+const LogIn: React.FC = () => {
+    const { uiProcessContext, showMessage, setLoading, hideMessage } = useContext(UIProcessContext)
+    const theme = useTheme()
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
@@ -21,13 +28,10 @@ const LogIn: React.FC<Props> = () => {
         const isSuccess = await AuthService.login(email, password);
         setLoading(false);
         if (isSuccess) {
-            setMessage('Přihlášení proběhlo úspěšně!')
-            setSeverity('success')
+            showMessage('Přihlášení proběhlo úspěšně!', 'success')
         } else {
-            setMessage('Přihlášení se nezdařilo. Zkontroluj prosím své přihlašovací údaje a zkus to znovu.')
-            setSeverity('error')
+            showMessage('Přihlášení se nezdařilo. Zkontroluj prosím své přihlašovací údaje a zkus to znovu.', 'error')
         }
-        setOpen(true);
     };
 
     return (
@@ -40,7 +44,7 @@ const LogIn: React.FC<Props> = () => {
                 alignItems: 'center',
             }}
         >
-            <img src="/logo/artist-logo.svg" alt="Symphonia Artist Logo" />
+            <img src="/logo/artist-logo.svg" alt="Symphonia Artist LogoBackground" />
 
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', mt: 4 }}>
                 Ahoj, vítej zpět!
@@ -50,7 +54,7 @@ const LogIn: React.FC<Props> = () => {
             </Typography>
 
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{mt: 1}}>
-                <TextField
+                <StyledTextField
                     margin="normal"
                     required
                     fullWidth
@@ -59,40 +63,9 @@ const LogIn: React.FC<Props> = () => {
                     name="email"
                     autoComplete="email"
                     autoFocus
-                    InputLabelProps={{
-                        style: {color: theme.palette.text.primary}
-                    }}
-                    sx={{
-                        '& label.Mui-focused': {
-                            color: theme.palette.primary.main,
-                        },
-                        '& .MuiInput-underline:after': {
-                            borderBottomColor: theme.palette.primary.main,
-                        },
-                        '& .MuiOutlinedInput-root': {
-                            transition: 'border-color 0.3s ease',
-                            '& fieldset': {
-                                borderColor: theme.palette.text.primary,
-                            },
-                            '&:hover fieldset': {
-                                borderColor: theme.palette.primary.main,
-                                borderWidth: '3px',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: theme.palette.primary.main,
-                                borderWidth: '3px',
-                            },
-                            '& input': {
-                                color: theme.palette.text.primary,
-                                '&:hover': {
-                                    color: theme.palette.primary.main,
-                                },
-                                transition: 'color 0.3s ease',
-                            },
-                        },
-                    }}
                 />
-                <TextField
+
+                <StyledTextField
                     margin="normal"
                     required
                     fullWidth
@@ -101,39 +74,8 @@ const LogIn: React.FC<Props> = () => {
                     type="password"
                     id="password"
                     autoComplete="current-password"
-                    InputLabelProps={{
-                        style: {color: theme.palette.text.primary}
-                    }}
-                    sx={{
-                        '& label.Mui-focused': {
-                            color: theme.palette.primary.main,
-                        },
-                        '& .MuiInput-underline:after': {
-                            borderBottomColor: theme.palette.primary.main,
-                        },
-                        '& .MuiOutlinedInput-root': {
-                            transition: 'border-color 0.3s ease',
-                            '& fieldset': {
-                                borderColor: theme.palette.text.primary,
-                            },
-                            '&:hover fieldset': {
-                                borderColor: theme.palette.primary.main,
-                                borderWidth: '3px',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: theme.palette.primary.main,
-                                borderWidth: '3px',
-                            },
-                            '& input': {
-                                color: theme.palette.text.primary,
-                                '&:hover': {
-                                    color: theme.palette.primary.main,
-                                },
-                                transition: 'color 0.3s ease',
-                            },
-                        },
-                    }}
                 />
+
                 <Grid container alignItems="center">
                     <Grid item xs>
                         <FormControlLabel
@@ -168,7 +110,7 @@ const LogIn: React.FC<Props> = () => {
                     </Typography>
 
                     <Link
-                        href="/artist/registration"
+                        href="/auth/registration"
                         variant="body2"
                         sx={{
                             color: theme.palette.secondary.main,
@@ -183,7 +125,6 @@ const LogIn: React.FC<Props> = () => {
                     </Link>
                 </Box>
             </Box>
-
             <SocialLogin />
         </Box>
     )

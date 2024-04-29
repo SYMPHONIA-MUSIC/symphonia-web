@@ -30,7 +30,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     const showMessage = (message: string, severity: 'success' | 'error' | 'info' | 'warning' | '') => {
         setMessage(message);
         setSeverity(severity);
-        // Если нужно, можно добавить логику для скрытия сообщения через некоторое время
+        // TODO MAYBE ADD LOGIC TO CLOSE AFTER TIME
     };
 
     return (

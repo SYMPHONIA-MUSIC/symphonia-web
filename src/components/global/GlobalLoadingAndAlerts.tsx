@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Backdrop, CircularProgress, Snackbar, Alert } from '@mui/material';
-import { useAppContext } from './AppContext';
+import {UIProcessContext} from "../../contexts/UIProcessContext";
 
 const GlobalLoadingAndAlerts: React.FC = () => {
-    const { loading, message, severity, setMessage } = useAppContext();
+    const { uiProcessContext, hideMessage } = useContext(UIProcessContext)
 
     return (
         <>
-            <Backdrop open={loading} style={{ zIndex: 1200 }}>
+            <Backdrop open={uiProcessContext.isLoading} style={{ zIndex: 1200 }}>
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('', '')}>
-                <Alert elevation={6} variant="filled" severity={severity} onClose={() => setMessage('', '')}>
-                    {message}
+            <Snackbar open={uiProcessContext.showAlert} autoHideDuration={6000}>
+                <Alert elevation={6} variant="filled" severity={uiProcessContext.alertSeverity} onClose={() => hideMessage()}>
+                    {uiProcessContext.alertMessage}
                 </Alert>
             </Snackbar>
         </>

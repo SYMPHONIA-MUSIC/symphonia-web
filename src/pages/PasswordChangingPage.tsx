@@ -22,37 +22,10 @@ import Checkbox from "@mui/material/Checkbox";
 import MuiAlert from "@mui/material/Alert";
 import {checkPasswordsMatch, validatePassword} from "../logic/FormUtils";
 import AuthService from "../logic/domain/AuthService";
+import Background from "../components/auth/background/Background";
+import LogoBackground from "../components/auth/background/LogoBackground";
 
-type Props = {}
-
-const Background = styled('div')(({ theme }) => ({
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    zIndex: -1,
-    '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: '-10px',
-        left: '-10px',
-        width: 'calc(100% + 20px)',
-        height: 'calc(100% + 20px)',
-        backgroundImage: 'url(/background/password.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        filter: 'blur(8px)',
-    }
-}));
-
-const Logo = styled('img')(({ theme }) => ({
-    width: theme.spacing(20),
-    height: theme.spacing(10)
-}));
-
-const PasswordChangingPage: React.FC<Props> = ({}) => {
+const PasswordChangingPage: React.FC = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -138,13 +111,7 @@ const PasswordChangingPage: React.FC<Props> = ({}) => {
             }}>
                 {changeStatus ? (
                     <Box sx={{ textAlign: 'center', mt: 2 }}>
-                        {isMobile ? (
-                            <Logo src="/logo/symphonia-logo.svg" alt="Logo" />
-                        ) : (
-                            <Box position="absolute" top={theme.spacing(2)} right={theme.spacing(2)}>
-                                <Logo src="/logo/symphonia-logo.svg" alt="Logo" />
-                            </Box>
-                        )}
+                        <LogoBackground src="/logo/symphonia-logo.svg" alt="LogoBackground" theme={theme} isMobile={isMobile} />
                         {changeStatus === 'success' ? (
                             <Box sx={{ color: 'green' }}>
                                 <Typography variant="h6" sx={{ mb: 2 }}>
@@ -163,13 +130,7 @@ const PasswordChangingPage: React.FC<Props> = ({}) => {
                     </Box>
                 ) : (<>
                         <Box display="flex" flexDirection="column" alignItems={isMobile ? 'center' : 'flex-start'}>
-                            {isMobile ? (
-                                <Logo src="/logo/symphonia-logo.svg" alt="Logo" />
-                            ) : (
-                                <Box position="absolute" top={theme.spacing(2)} right={theme.spacing(2)}>
-                                    <Logo src="/logo/symphonia-logo.svg" alt="Logo" />
-                                </Box>
-                            )}
+                            <LogoBackground src="/logo/symphonia-logo.svg" alt="LogoBackground" theme={theme} isMobile={isMobile} />
                             <Typography component="h1" variant="h3" sx={{
                                 color: theme.palette.text.primary,
                                 mb: 3
