@@ -10,6 +10,12 @@ import LogIn from "../components/auth/LogIn";
 import Registration from "../components/auth/Registration";
 import ArtistRegistrationPage from "./ArtistRegistrationPage";
 
+export enum CredentialsType {
+    BASIC = 'BASIC',
+    GOOGLE = 'GOOGLE',
+    FACEBOOK = 'FACEBOOK',
+}
+
 const AuthPage = () => {
     const[showLogin, setShowLogin] = React.useState(true);
 
@@ -24,9 +30,9 @@ const AuthPage = () => {
                 sm={4}
                 md={7}
                 sx={{
-                    backgroundImage: 'url(/background/test.png)',
+                    backgroundImage: 'url(/background/test.svg)',
+                    backgroundColor: theme.palette.background.default,
                     backgroundRepeat: 'no-repeat',
-                    backgroundColor: theme.palette.primary.main,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                 }}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {styled, useTheme} from "@mui/material/styles";
 import {
     Backdrop,
@@ -27,6 +27,7 @@ import LogoBackground from "../components/auth/background/LogoBackground";
 
 const PasswordChangingPage: React.FC = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [changeStatus, setChangeStatus] = useState<'success' | 'error' | null>(null)
@@ -85,7 +86,7 @@ const PasswordChangingPage: React.FC = () => {
             if (isSuccess) {
                 setChangeStatus('success');
                 setMessage('Heslo bylo úspěšně změněno, přesměrování na hlávní stránku');
-                setTimeout(() => { window.location.href = '/login'; }, 5000);
+                setTimeout(() => { navigate('/auth/login') }, 5000);
             } else {
                 setChangeStatus('error');
                 setMessage('Změna hesla se nezdařila. Zkontrolujte prosím své údaje a zkuste to znovu');

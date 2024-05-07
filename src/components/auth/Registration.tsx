@@ -15,12 +15,14 @@ import {UIProcessContext} from "../../contexts/UIProcessContext";
 import SocialLogin from "./SocialLogin";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
 import StyledTextField from "../global/StyledTextField";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 
 export type RegistrationType = 'user' | 'artist';
 
 const Registration: React.FC = () => {
     const { uiProcessContext, showMessage, setLoading, hideMessage } = useContext(UIProcessContext)
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const CustomToggleButton = styled(ToggleButton)({
         '&.Mui-selected': {
@@ -87,7 +89,13 @@ const Registration: React.FC = () => {
             sessionStorage.setItem('registrationType', registrationType);
             sessionStorage.setItem('email', email);
             sessionStorage.setItem('password', password);
-            window.location.href = '/auth/artist-reg';
+
+            if (registrationType === "artist") {
+                navigate('/auth/artist-reg')
+            } else {
+                sessionStorage.setItem('credentialsType', 'BASIC');
+                navigate('/auth/user-reg')
+            }
         } else {
             setLoading(false);
             showMessage('E-mail je již obsazen', 'error')
@@ -197,7 +205,8 @@ const Registration: React.FC = () => {
                     </Typography>
 
                     <Link
-                        href="/auth/login"
+                        component={RouterLink}
+                        to="/auth/login"
                         variant="body2"
                         sx={{
                             color: theme.palette.secondary.main,
@@ -212,7 +221,7 @@ const Registration: React.FC = () => {
                     </Link>
                 </Box>
             </Box>
-            <SocialLogin />
+            {registrationType === 'user' && <SocialLogin />}
         </Box>
     )
 }

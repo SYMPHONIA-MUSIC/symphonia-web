@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 class DataService {
-    static async updateArtistPhoto(photo: File): Promise<boolean> {
+    static async updatePhoto(photo: File, serviceName: string): Promise<boolean> {
         const formData = new FormData();
         formData.append('photo', photo);
 
         try {
-            const response = await axios.patch('http://localhost:8080/api/artist/info/photo', formData, {
+            const response = await axios.patch('http://localhost:8080/api/' + serviceName + '/info/photo', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

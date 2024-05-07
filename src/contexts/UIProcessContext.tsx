@@ -1,4 +1,5 @@
-import React, {createContext, useContext, useState, ReactNode, SetStateAction, Dispatch} from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import {CurrentMusicInfo} from "./MusicPlayerContext";
 
 type AlertSeverity = 'success' | 'error' | 'warning' | 'info';
 
@@ -11,7 +12,7 @@ export type UIProcess = {
 
 export interface UIProcessContextInterface {
     uiProcessContext: UIProcess;
-    showMessage: (message: string, severity: AlertSeverity ) => void;
+    showMessage: (message: string, severity: AlertSeverity) => void;
     setLoading: (isLoading: boolean) => void;
     hideMessage: () => void;
 }
@@ -28,7 +29,7 @@ const defaultState: UIProcessContextInterface = {
     showMessage: (message: string, severity: AlertSeverity) => {},
     setLoading: (isLoading: boolean) => {},
     hideMessage: () => {}
-} as UIProcessContextInterface;
+};
 
 export const UIProcessContext = createContext(defaultState);
 
@@ -41,11 +42,20 @@ export function UIProcessProvider({ children }: UIProcessProviderProps) {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertSeverity, setAlertSeverity] = useState<AlertSeverity | undefined>(undefined);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const showMessage = (message: string, severity: AlertSeverity) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
         setAlertMessage(message);
         setAlertSeverity(severity);
         setShowAlert(true);
+
+        timeoutRef.current = setTimeout(() => {
+            hideMessage();
+        }, 5000);
     };
 
     const setLoading = (loading: boolean) => {
@@ -54,8 +64,6 @@ export function UIProcessProvider({ children }: UIProcessProviderProps) {
 
     const hideMessage = () => {
         setShowAlert(false);
-        setAlertMessage(null);
-        setAlertSeverity(undefined);
     };
 
     const uiProcessContext: UIProcess = {
@@ -69,5 +77,5 @@ export function UIProcessProvider({ children }: UIProcessProviderProps) {
         <UIProcessContext.Provider value={{ uiProcessContext, showMessage, setLoading, hideMessage }}>
             {children}
         </UIProcessContext.Provider>
-    )
+    );
 }

@@ -27,6 +27,7 @@ interface RegistrationArtistInfoDto {
 
 interface RegistrationUserInfoDto {
     type: RegistrationType;
+    username: string;
     likedArtistsId: string[];
     likedGenres: string[];
 }
@@ -38,26 +39,40 @@ export interface RegisterResult {
     type: RegistrationType | null;
 }
 
+export interface LoginResult {
+    result: boolean;
+    type: RegistrationType | null;
+    messageOnAlert: string | null;
+}
+
 class AuthService {
-    async login (email: string, password: string): Promise<boolean> {
+    async login (email: string, password: string): Promise<LoginResult> {
         const requestBody: LoginRequest = { email, password, type: "artist" };
 
         try {
             const response = await api.post("http://localhost:8080/api/auth/basic/login", requestBody)
 
             if (response.status === 200) {
-                window.location.href = "/panel";
-                return true;
+                const responseBody = response.data;
+                let registrationType: RegistrationType = 'user';
+                if (responseBody === "ARTIST") {
+                    registrationType = 'artist';
+                } else if (responseBody === "USER") {
+                    registrationType = 'user';
+                } else {
+                    return { result: false, type: null, messageOnAlert: 'Neočekávaná chyba, zkus to později' };
+                }
+                return { result: true, type: registrationType, messageOnAlert: null };
             } else {
-                return false;
+                return { result: false, type: null, messageOnAlert: 'Byly zadány nesprávné údaje uživatele' };
             }
         } catch (error) {
             if (api.isAxiosError(error)) {
                 console.error('Login failed:', error.response?.statusText || error.message);
-                return false;
+                return { result: false, type: null, messageOnAlert: 'Nelze se přihlásit, zkus to později' };
             } else {
                 console.error('Unexpected error:', error);
-                return false;
+                return { result: false, type: null, messageOnAlert: 'Neočekávaná chyba, zkus to později' };
             }
         }
     }
@@ -109,21 +124,21 @@ class AuthService {
 
     async checkIfUsernameIsAvailable(username: string): Promise<UsernameAvailabilityResponse> {
         try {
-            const response = await api.get("http://localhost:8080/api/user/info?username=" + username);
-            if (response.status === 201) {
-                return { isAvailable: true, message: 'Jméno je dostupné.' };
+            const response = await api.get("http://localhost:8080/api/user/info/check-username?username=" + username);
+            if (response.status === 200) {
+                return { isAvailable: true, message: 'Jméno je dostupné' };
             } else if (response.status === 409) {
-                return { isAvailable: false, message: 'Jméno je již obsazeno.' };
+                return { isAvailable: false, message: 'Jméno je již obsazeno' };
             } else {
-                return { isAvailable: false, message: 'Neznámá chyba.' };
+                return { isAvailable: false, message: 'Neznámá chyba' };
             }
         } catch (error) {
             if (api.isAxiosError(error)) {
                 console.error('Kontrola dostupnosti jména:', error.response?.statusText || error.message);
-                return { isAvailable: false, message: 'Chyba při kontrole dostupnosti jména.' };
+                return { isAvailable: false, message: 'Chyba při kontrole dostupnosti jména' };
             } else {
                 console.error('Neočekávaná chyba:', error);
-                return { isAvailable: false, message: 'Neočekávaná chyba.' };
+                return { isAvailable: false, message: 'Neočekávaná chyba' };
             }
         }
     }
@@ -131,6 +146,7 @@ class AuthService {
     async registerUser(email: string, password: string, username: string, likedArtistsId: string[], likedGenres: string[]): Promise<RegisterResult> {
         const registrationInfoDTO: RegistrationUserInfoDto = {
             type: "user",
+            username: username,
             likedArtistsId: likedArtistsId,
             likedGenres: likedGenres
         }

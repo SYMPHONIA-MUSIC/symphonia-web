@@ -1,22 +1,23 @@
-import {Box, Theme} from '@mui/material';
+import { Box } from '@mui/material';
 import React, {useContext} from 'react';
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import AuthService from "../../logic/domain/AuthService";
 import {UIProcessContext} from "../../contexts/UIProcessContext";
 import {useTheme} from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import SocialLogin from "./SocialLogin";
 import StyledTextField from "../global/StyledTextField";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import Link from "@mui/material/Link";
 
 
 const LogIn: React.FC = () => {
     const { uiProcessContext, showMessage, setLoading, hideMessage } = useContext(UIProcessContext)
     const theme = useTheme()
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
@@ -27,10 +28,18 @@ const LogIn: React.FC = () => {
 
         const isSuccess = await AuthService.login(email, password);
         setLoading(false);
-        if (isSuccess) {
-            showMessage('Přihlášení proběhlo úspěšně!', 'success')
+        if (isSuccess.result) {
+            if (isSuccess.type === 'artist') {
+                navigate('/artist/panel')
+            } else {
+                navigate('/user/panel')
+            }
         } else {
-            showMessage('Přihlášení se nezdařilo. Zkontroluj prosím své přihlašovací údaje a zkus to znovu.', 'error')
+            if (isSuccess.messageOnAlert != null) {
+                showMessage(isSuccess.messageOnAlert, 'error')
+            } else {
+                showMessage('Přihlášení se nezdařilo. Zkontroluj prosím své přihlašovací údaje a zkus to znovu', 'error')
+            }
         }
     };
 
@@ -76,20 +85,10 @@ const LogIn: React.FC = () => {
                     autoComplete="current-password"
                 />
 
-                <Grid container alignItems="center">
-                    <Grid item xs>
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"
-                                               sx={{
-                                                   color: theme.palette.text.primary
-                                               }}
-                            />}
-                            label="Pamatuj si mě"
-                        />
-                    </Grid>
+                <Grid container alignItems="center" justifyContent="flex-end">
 
                     <Grid item>
-                        <Link href="#" variant="body2">
+                        <Link component={RouterLink} to="/password-reset" variant="body2">
                             Zapomněli jsi heslo?
                         </Link>
                     </Grid>
@@ -110,7 +109,8 @@ const LogIn: React.FC = () => {
                     </Typography>
 
                     <Link
-                        href="/auth/registration"
+                        component={RouterLink}
+                        to="/auth/registration"
                         variant="body2"
                         sx={{
                             color: theme.palette.secondary.main,

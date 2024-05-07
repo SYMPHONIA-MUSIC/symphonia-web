@@ -1,10 +1,12 @@
-import React, {useRef, useState} from 'react';
-import { IconButton, Box } from '@mui/material';
+import React, {useEffect, useRef, useState} from 'react';
+import {IconButton, Box, Typography} from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { styled } from '@mui/material/styles';
+import {styled, useTheme} from '@mui/material/styles';
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
-    onChange: (file: File) => void;
+    image: File | null;
+    onChange: (file: File | null) => void;
 }
 
 const CircleButton = styled(IconButton)({
@@ -29,19 +31,22 @@ const ImagePreview = styled('img')({
     borderRadius: '50%'
 });
 
-const CircleImageUploader: React.FC<Props> = ({ onChange }) => {
+const CircleImageUploader: React.FC<Props> = ({ image, onChange }) => {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const theme = useTheme()
+    useEffect(() => {
+        if (image) {
+            const reader = new FileReader();
+            reader.onload = (e) => setPreviewImage(e.target?.result as string);
+            reader.readAsDataURL(image);
+        }
+    }, [image]);
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             onChange(file);
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setPreviewImage(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
         }
     };
 
@@ -49,11 +54,16 @@ const CircleImageUploader: React.FC<Props> = ({ onChange }) => {
         fileInputRef.current?.click();
     };
 
+    const handleRemoveImage = () => {
+        onChange(null);
+        setPreviewImage(null)
+    };
+
     return (
-        <Box>
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" >
             <CircleButton onClick={handleButtonClick}>
                 {previewImage ? (
-                    <ImagePreview src={previewImage} alt="Author" />
+                    <ImagePreview src={previewImage} alt="Profile image" />
                 ) : (
                     <AddPhotoAlternateIcon fontSize="large" />
                 )}
@@ -65,6 +75,16 @@ const CircleImageUploader: React.FC<Props> = ({ onChange }) => {
                 hidden
                 onChange={handleImageChange}
             />
+            {previewImage && (
+                <Box display="flex" alignItems="center">
+                    <Typography onClick={handleRemoveImage} style={{ cursor: 'pointer', marginLeft: 8, color: theme.palette.error.main }}>
+                        Click to remove the image
+                    </Typography>
+                    <IconButton onClick={handleRemoveImage} style={{ cursor: 'pointer', color: theme.palette.error.main }}>
+                        <DeleteIcon fontSize="large" />
+                    </IconButton>
+                </Box>
+            )}
         </Box>
     );
 };

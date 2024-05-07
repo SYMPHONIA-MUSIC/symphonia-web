@@ -30,6 +30,15 @@ const theme = createTheme({
         fontFamily: 'Poppins, Arial, sans-serif',
         fontSize: 14
     },
+    components: {
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: 'transparent',
+                },
+            },
+        },
+    },
 });
 
 export default theme;

@@ -15,31 +15,32 @@ import CircleImageUploader from '../components/auth/CircleImageUploader';
 import AuthService from "../logic/domain/AuthService";
 import {RegistrationType} from "../components/auth/Registration";
 import DataService from "../logic/domain/DataService";
+import {useNavigate} from "react-router-dom";
 
 const ArtistRegistrationPage: React.FC = () => {
     const { uiProcessContext, showMessage, setLoading, hideMessage } = useContext(UIProcessContext);
 
     const theme = useTheme();
+    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [username, setUsername] = useState('');
     const [description, setDescription] = useState('');
     const [authorImage, setAuthorImage] = useState<File | null>(null);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-
-    const handleImageChange = (file: File) => {
-        setAuthorImage(file);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setPreviewImage(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
+    const handleImageChange = (file: File | null) => {
+        if (file) {
+            setAuthorImage(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+        } else {
+            setAuthorImage(null);
+        }
     };
 
     useEffect(() => {
@@ -51,7 +52,7 @@ const ArtistRegistrationPage: React.FC = () => {
 
         if (!registrationType || !storedEmail || !storedPassword || registrationType !== 'artist') {
             setLoading(false)
-            window.location.href = '/auth/registration';
+            navigate('/auth/registration');
         }
         if (storedEmail && storedPassword) {
             setEmail(storedEmail);
@@ -86,7 +87,7 @@ const ArtistRegistrationPage: React.FC = () => {
 
         if (isSuccess.result) {
             if (authorImage) {
-                const uploadSuccess = await DataService.updateArtistPhoto(authorImage);
+                const uploadSuccess = await DataService.updatePhoto(authorImage, "artist");
                 if (uploadSuccess) {
                     showMessage('Umělec byl úspěšně zaregistrován a fotografie byla úspěšně nahrána', 'success');
                 } else {
@@ -97,14 +98,14 @@ const ArtistRegistrationPage: React.FC = () => {
             }
             setLoading(false);
             setTimeout(function() {
-                window.location.href = '/artist/panel';
+                navigate('/artist/panel')
             }, 3000);
         } else {
             showMessage('Registrace nebyla úspěšná. Zkuste to znovu později.', 'error');
             clearSessionStorage()
             setLoading(false);
             setTimeout(function() {
-                window.location.href = '/auth/registration';
+                navigate('/auth/registration')
             }, 3000);
         }
     };
@@ -136,7 +137,7 @@ const ArtistRegistrationPage: React.FC = () => {
                             <Typography variant="subtitle1" sx={{ color: theme.palette.text.primary, mb: 1 }}>
                                 Nahraj svou fotografii
                             </Typography>
-                            <CircleImageUploader onChange={handleImageChange} />
+                            <CircleImageUploader image={authorImage} onChange={handleImageChange} />
                         </Box>
                         <StyledTextField
                             margin="normal"
